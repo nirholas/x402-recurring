@@ -7,7 +7,7 @@
  * server never pulls funds; the client-side scheduler pays every run.
  */
 import { createHash, randomUUID } from "node:crypto";
-import { signArtifact, type Signed } from "./sign.js";
+import { resignInPlace, signArtifact, type Signed } from "./sign.js";
 import { loadStore, saveStore } from "./store.js";
 
 export type TaskType = "heartbeat" | "counter" | "digest";
@@ -123,6 +123,7 @@ export function getMandate(id: string): Signed<Mandate> | undefined {
   if (!m) return undefined;
   if (m.status === "active" && new Date(m.expiresAt).getTime() < Date.now()) {
     m.status = "expired";
+    resignInPlace(m); // the stored document changed — its signature must follow
     persist();
   }
   return m;
@@ -177,6 +178,7 @@ export function executeMandate(id: string, payload: unknown): Signed<RunReport> 
 
   mandate.runsCompleted += 1;
   if (mandate.runsCompleted >= mandate.maxRuns) mandate.status = "exhausted";
+  resignInPlace(mandate); // runsCompleted/status moved — re-sign the document
   persist();
 
   const report: RunReport = {
