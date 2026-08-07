@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { paywall, payToBanner, withSettlement } from "./payments.js";
+import { ROUTE_SCHEMAS } from "./schemas.js";
 import {
   createMandate,
   executeMandate,
@@ -31,7 +32,7 @@ app.use(
       return {
         price: mandate.pricePerRun,
         description: `Execute one run of mandate ${id} (${mandate.task.type})`,
-        outputSchema: { type: "object", description: "Signed run report with the run artifact" },
+        outputSchema: ROUTE_SCHEMAS["POST /execute/:mandateId"],
       };
     },
   }),

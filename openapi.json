@@ -128,9 +128,6 @@
                 }
               }
             }
-          },
-          "402": {
-            "description": "Payment Required"
           }
         },
         "requestBody": {
@@ -196,18 +193,7 @@
             }
           }
         },
-        "x-payment-info": {
-          "price": {
-            "mode": "fixed",
-            "currency": "USD",
-            "amount": "0.000000"
-          },
-          "protocols": [
-            {
-              "x402": {}
-            }
-          ]
-        }
+        "security": []
       },
       "get": {
         "summary": "Summaries of every mandate this instance has issued.",
@@ -245,23 +231,9 @@
                 }
               }
             }
-          },
-          "402": {
-            "description": "Payment Required"
           }
         },
-        "x-payment-info": {
-          "price": {
-            "mode": "fixed",
-            "currency": "USD",
-            "amount": "0.000000"
-          },
-          "protocols": [
-            {
-              "x402": {}
-            }
-          ]
-        }
+        "security": []
       }
     },
     "/execute/{mandateId}": {
@@ -406,7 +378,9 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "payload": {}
+                  "payload": {
+                    "description": "Optional per-run input handed to the mandate's task (any JSON). Merged into the run artifact."
+                  }
                 }
               },
               "example": {
@@ -493,23 +467,9 @@
                 }
               }
             }
-          },
-          "402": {
-            "description": "Payment Required"
           }
         },
-        "x-payment-info": {
-          "price": {
-            "mode": "fixed",
-            "currency": "USD",
-            "amount": "0.000000"
-          },
-          "protocols": [
-            {
-              "x402": {}
-            }
-          ]
-        }
+        "security": []
       }
     },
     "/verify": {
@@ -538,9 +498,6 @@
                 }
               }
             }
-          },
-          "402": {
-            "description": "Payment Required"
           }
         },
         "requestBody": {
@@ -575,18 +532,7 @@
             }
           }
         },
-        "x-payment-info": {
-          "price": {
-            "mode": "fixed",
-            "currency": "USD",
-            "amount": "0.000000"
-          },
-          "protocols": [
-            {
-              "x402": {}
-            }
-          ]
-        }
+        "security": []
       }
     },
     "/health": {
@@ -619,23 +565,9 @@
                 }
               }
             }
-          },
-          "402": {
-            "description": "Payment Required"
           }
         },
-        "x-payment-info": {
-          "price": {
-            "mode": "fixed",
-            "currency": "USD",
-            "amount": "0.000000"
-          },
-          "protocols": [
-            {
-              "x402": {}
-            }
-          ]
-        }
+        "security": []
       }
     }
   },
