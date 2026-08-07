@@ -1,0 +1,207 @@
+{
+  "x402Version": 1,
+  "name": "x402-recurring",
+  "description": "Standing orders for agents — mandate documents plus a client-side scheduler that pays per run and collects run reports",
+  "homepage": "https://nirholas.github.io/x402-recurring/",
+  "skill": "skill.md",
+  "networks": [
+    "base-sepolia",
+    "base",
+    "solana-devnet",
+    "solana"
+  ],
+  "payTo": {
+    "evm": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
+    "solana": "WwwuGbqHrwF5RG89KhUbmRWEvjnRH9k5kVM5p7T3WwW"
+  },
+  "facilitator": "https://x402.org/facilitator",
+  "resources": [
+    {
+      "resource": "POST /mandates",
+      "description": "Create a signed mandate document (task, cadence, price per run, budget, expiry).",
+      "price": "$0",
+      "network": "base-sepolia",
+      "asset": "USDC",
+      "accepts": [],
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "mandateId": {
+            "type": "string"
+          },
+          "document": {
+            "const": "x402-recurring/mandate"
+          },
+          "task": {
+            "type": "object"
+          },
+          "cadence": {
+            "type": "object"
+          },
+          "pricePerRun": {
+            "type": "string"
+          },
+          "maxRuns": {
+            "type": "integer"
+          },
+          "payer": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "exhausted",
+              "expired"
+            ]
+          },
+          "runsCompleted": {
+            "type": "integer"
+          },
+          "signature": {
+            "type": "string"
+          },
+          "algorithm": {
+            "const": "HMAC-SHA256"
+          }
+        }
+      }
+    },
+    {
+      "resource": "POST /execute/:mandateId",
+      "description": "Execute one run of a mandate. Priced per mandate (its pricePerRun, default $0.005). Returns a signed run report containing the task artifact.",
+      "price": "$0.005",
+      "network": "base-sepolia",
+      "asset": "USDC",
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "base-sepolia",
+          "asset": "USDC",
+          "payTo": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
+          "price": "$0.005"
+        },
+        {
+          "scheme": "exact",
+          "network": "solana-devnet",
+          "asset": "USDC",
+          "payTo": "WwwuGbqHrwF5RG89KhUbmRWEvjnRH9k5kVM5p7T3WwW",
+          "price": "$0.005"
+        }
+      ],
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "runId": {
+            "type": "string"
+          },
+          "document": {
+            "const": "x402-recurring/run-report"
+          },
+          "mandateId": {
+            "type": "string"
+          },
+          "runNumber": {
+            "type": "integer"
+          },
+          "executedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "charged": {
+            "type": "string"
+          },
+          "budget": {
+            "type": "object"
+          },
+          "artifact": {
+            "type": "object"
+          },
+          "signature": {
+            "type": "string"
+          },
+          "algorithm": {
+            "const": "HMAC-SHA256"
+          },
+          "payment": {
+            "type": "object",
+            "description": "Settlement receipt: rail, network, transaction, payer"
+          }
+        }
+      }
+    },
+    {
+      "resource": "GET /mandates/:id",
+      "description": "Current mandate document including status and runs completed.",
+      "price": "$0",
+      "network": "base-sepolia",
+      "asset": "USDC",
+      "accepts": [],
+      "outputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "resource": "GET /mandates",
+      "description": "Summaries of every mandate this instance has issued.",
+      "price": "$0",
+      "network": "base-sepolia",
+      "asset": "USDC",
+      "accepts": [],
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "mandates": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    {
+      "resource": "POST /verify",
+      "description": "Verify the HMAC-SHA256 signature of any artifact issued by this service.",
+      "price": "$0",
+      "network": "base-sepolia",
+      "asset": "USDC",
+      "accepts": [],
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "valid": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    {
+      "resource": "GET /health",
+      "description": "Liveness probe.",
+      "price": "$0",
+      "network": "base-sepolia",
+      "asset": "USDC",
+      "accepts": [],
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "service": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  ]
+}
