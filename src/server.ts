@@ -3,7 +3,7 @@ import express from "express";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { paymentOf, paywall, payToBanner } from "./payments.js";
+import { paywall, payToBanner, withSettlement } from "./payments.js";
 import {
   createMandate,
   executeMandate,
@@ -66,7 +66,7 @@ app.post("/verify", (req, res) => {
 app.post("/execute/:mandateId", (req, res) => {
   try {
     const report = executeMandate(req.params.mandateId, req.body?.payload);
-    res.json({ ...report, payment: paymentOf(req) ?? null });
+    res.json(withSettlement(report, req));
   } catch (err) {
     if (err instanceof MandateError) {
       return res.status(err.statusCode).json({ error: err.code, message: err.message });

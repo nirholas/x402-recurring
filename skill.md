@@ -92,7 +92,7 @@ Response `200`:
   },
   "signature": "9c1d…hex hmac…",
   "algorithm": "HMAC-SHA256",
-  "payment": {
+  "settlement": {
     "rail": "evm",
     "network": "base-sepolia",
     "transaction": "0xabc…",

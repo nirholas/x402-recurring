@@ -299,9 +299,9 @@
                     "algorithm": {
                       "const": "HMAC-SHA256"
                     },
-                    "payment": {
+                    "settlement": {
                       "type": "object",
-                      "description": "Settlement receipt: rail, network, transaction, payer"
+                      "description": "x402 settlement receipt echoed alongside the artifact (rail, network, transaction, payer). Added after signing and excluded from signature verification."
                     }
                   }
                 },
@@ -326,7 +326,7 @@
                   },
                   "signature": "9c1d…hex hmac…",
                   "algorithm": "HMAC-SHA256",
-                  "payment": {
+                  "settlement": {
                     "rail": "evm",
                     "network": "base-sepolia",
                     "transaction": "0xabc…",
