@@ -7,6 +7,7 @@ import { paywall, payToBanner, withSettlement } from "./payments.js";
 import { ROUTE_SCHEMAS } from "./schemas.js";
 import {
   createMandate,
+  DEFAULT_RUN_PRICE,
   executeMandate,
   getMandate,
   listMandates,
@@ -22,16 +23,24 @@ app.use(express.json({ limit: "256kb" }));
 
 // ---- x402 paywall: POST /execute/:mandateId is priced per mandate ----------
 // The price of a run is whatever the mandate says it is, so the 402 challenge
-// always quotes the true price of the thing being bought — on both rails.
+// quotes the true price of the thing being bought — on both rails.
+//
+// The challenge comes first, always. An unpaid request is answered with 402 and
+// the full `accepts` array before the mandate id is looked at, so a discovery
+// probe (or any agent) can read the payment terms of this route without owning
+// a mandate. Whether the mandate exists, is active, or has budget left is the
+// handler's business, after payment. Confirm a mandate with the free
+// `GET /mandates/:id` before paying for a run.
 app.use(
   paywall({
     "POST /execute/:mandateId": (req) => {
       const id = req.path.split("/")[2] || "";
       const mandate = getMandate(id);
-      if (!mandate || mandate.status !== "active") return null; // free 404/410 below
       return {
-        price: mandate.pricePerRun,
-        description: `Execute one run of mandate ${id} (${mandate.task.type})`,
+        price: mandate?.pricePerRun ?? DEFAULT_RUN_PRICE,
+        description: mandate
+          ? `Execute one run of mandate ${id} (${mandate.task.type})`
+          : "Execute one run of a mandate",
         outputSchema: ROUTE_SCHEMAS["POST /execute/:mandateId"],
       };
     },

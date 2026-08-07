@@ -341,7 +341,7 @@
             }
           },
           "402": {
-            "description": "Payment required — dual-rail x402 challenge listing a Base (EVM) and a Solana entry.",
+            "description": "Payment required — dual-rail x402 challenge listing a Base (EVM) and a Solana entry. Returned before the mandate id is resolved, so the route's terms are always discoverable.",
             "content": {
               "application/json": {
                 "schema": {
@@ -351,7 +351,7 @@
             }
           },
           "404": {
-            "description": "Unknown mandateId — not charged",
+            "description": "Unknown mandateId. Payment has already settled — confirm the mandate with the free GET /mandates/{id} before paying.",
             "content": {
               "application/json": {
                 "schema": {
@@ -361,7 +361,7 @@
             }
           },
           "410": {
-            "description": "All runs used — not charged",
+            "description": "Mandate expired or all runs used. Payment has already settled — check status with the free GET /mandates/{id} first.",
             "content": {
               "application/json": {
                 "schema": {

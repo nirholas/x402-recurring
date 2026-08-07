@@ -178,9 +178,13 @@ PRIVATE_KEY=0x... npm run client
 
 | Status | Code | Meaning |
 |---|---|---|
-| 404 | `MANDATE_NOT_FOUND` | Unknown mandateId — not charged |
-| 410 | `MANDATE_EXPIRED` | Mandate past its expiry — not charged |
-| 410 | `MANDATE_EXHAUSTED` | All runs used — not charged |
+| 404 | `MANDATE_NOT_FOUND` | Unknown mandateId |
+| 410 | `MANDATE_EXPIRED` | Mandate past its expiry |
+| 410 | `MANDATE_EXHAUSTED` | All runs used |
+
+The 402 challenge is returned before the mandate is looked up — the route can be
+priced and discovered without owning a mandate — which also means payment settles
+before the run is attempted. Payment settles before the run is attempted, so check the mandate with the free `GET /mandates/:id` first.
 
 ---
 

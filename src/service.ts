@@ -51,6 +51,15 @@ export interface RunReport {
 const MIN_PRICE = 0.001;
 const MAX_PRICE = Number(process.env.MAX_RUN_PRICE || "0.10");
 const DEFAULT_PRICE = 0.005;
+
+/**
+ * The price quoted for a run whose mandate cannot be priced yet — an id that is
+ * unknown, or one whose mandate is no longer active. The paywall must answer
+ * with a 402 challenge before it looks anything up (see server.ts), so it needs
+ * a price it can quote without a mandate in hand; this is the same default a
+ * mandate gets when it is created without an explicit `pricePerRun`.
+ */
+export const DEFAULT_RUN_PRICE = `$${DEFAULT_PRICE.toFixed(3)}`;
 const TASK_TYPES: TaskType[] = ["heartbeat", "counter", "digest"];
 
 type MandateStore = Record<string, Signed<Mandate>>;

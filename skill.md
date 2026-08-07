@@ -231,9 +231,14 @@ holding both rails:
 | Status | Code | Meaning |
 |---|---|---|
 | 402 | — | Payment required — dual-rail x402 challenge with `accepts[]` |
-| 404 | `MANDATE_NOT_FOUND` | Unknown mandateId (not charged) |
-| 410 | `MANDATE_EXPIRED` | Mandate past `expiresAt` (not charged) |
-| 410 | `MANDATE_EXHAUSTED` | All runs used (not charged) |
+| 404 | `MANDATE_NOT_FOUND` | Unknown mandateId |
+| 410 | `MANDATE_EXPIRED` | Mandate past `expiresAt` |
+| 410 | `MANDATE_EXHAUSTED` | All runs used |
+
+`POST /execute/:mandateId` answers 402 with the payment terms before it looks the
+mandate up, so the route is quotable without owning a mandate — but it also means
+payment settles before the run is attempted. Confirm the mandate is `active` with
+the free `GET /mandates/:id` before paying.
 | 400 | `BAD_REQUEST` | Malformed body |
 
 ## Discovery
