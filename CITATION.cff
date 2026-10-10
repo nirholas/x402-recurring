@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: If you use this software, please cite it as below.
+title: "x402-recurring"
+abstract: "Standing orders for agents: mandate documents plus a client-side scheduler that pays per run and collects run reports"
+license: Apache-2.0
+repository-code: "https://github.com/nirholas/x402-recurring"
+url: "https://three.ws"
+authors:
+  - name: three.ws
+    website: "https://three.ws"
