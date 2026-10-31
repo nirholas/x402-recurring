@@ -173,11 +173,59 @@ function runTask(mandate: Mandate, runNumber: number, payload: unknown): Record<
   }
 }
 
+/** Runs held for payments that are verified but not yet settled, per mandate. */
+const reservedRuns = new Map<string, number>();
+
+function releaseRun(id: string): void {
+  const left = (reservedRuns.get(id) ?? 0) - 1;
+  if (left > 0) reservedRuns.set(id, left);
+  else reservedRuns.delete(id);
+}
+
+export interface RunReservation {
+  rejected?: false;
+  release: () => void;
+}
+
+export interface RunRejection {
+  rejected: true;
+  status: number;
+  error: string;
+  message: string;
+}
+
+/**
+ * Checks a run can be delivered and holds a slot for it. Called after a
+ * payment verifies and before it settles, so a payment for a missing, expired
+ * or exhausted mandate is never settled, and concurrent payments for the last
+ * slot cannot both settle. Release the hold if settlement fails.
+ */
+export function reserveRun(id: string): RunReservation | RunRejection {
+  const mandate = getMandate(id);
+  if (!mandate)
+    return { rejected: true, status: 404, error: "MANDATE_NOT_FOUND", message: `No mandate ${id}` };
+  if (mandate.status === "expired")
+    return { rejected: true, status: 410, error: "MANDATE_EXPIRED", message: `Mandate ${id} expired at ${mandate.expiresAt}` };
+  const held = reservedRuns.get(id) ?? 0;
+  if (mandate.status === "exhausted" || mandate.runsCompleted + held >= mandate.maxRuns)
+    return { rejected: true, status: 410, error: "MANDATE_EXHAUSTED", message: `Mandate ${id} has used all ${mandate.maxRuns} runs` };
+  reservedRuns.set(id, held + 1);
+  let released = false;
+  return {
+    release: () => {
+      if (released) return;
+      released = true;
+      releaseRun(id);
+    },
+  };
+}
+
 /**
  * Executes one paid run. The x402 payment has already settled by the time this
  * runs, so the report — the purchased artifact — is returned in this response.
  */
-export function executeMandate(id: string, payload: unknown): Signed<RunReport> {
+export function executeMandate(id: string, payload: unknown, reserved = false): Signed<RunReport> {
+  if (reserved) releaseRun(id); // the held slot is consumed below
   const mandate = getMandate(id);
   if (!mandate) throw new MandateError(404, "MANDATE_NOT_FOUND", `No mandate ${id}`);
   if (mandate.status === "expired")

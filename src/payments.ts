@@ -126,6 +126,28 @@ export interface PriceSpec {
   description: string;
   mimeType?: string;
   outputSchema?: Record<string, unknown>;
+  /**
+   * Runs after a payment verifies and BEFORE it settles. Return a rejection to
+   * answer the request with that status/body without moving any funds, or a
+   * reservation to hold the purchased resource until settlement finishes.
+   * The reservation's `release` is called if settlement fails or throws;
+   * after a successful settlement the handler owns it.
+   */
+  reserve?: (req: Request) => Reservation | Rejection;
+}
+
+/** A refusal raised before settlement: no funds move. */
+export interface Rejection {
+  rejected: true;
+  status: number;
+  error: string;
+  message: string;
+}
+
+/** A hold on the purchased resource, undone with `release()` if payment fails. */
+export interface Reservation {
+  rejected?: false;
+  release: () => void;
 }
 
 /**
@@ -265,8 +287,19 @@ export function paywall(routes: RoutePrices): RequestHandler {
       if (!verification.isValid) {
         return challenge(res, accepts, verification.invalidReason || "Payment verification failed");
       }
-      const receipt = await facilitator.settle(payload, selected);
+      const hold = spec.reserve?.(req);
+      if (hold?.rejected) {
+        return res.status(hold.status).json({ error: hold.error, message: hold.message });
+      }
+      let receipt;
+      try {
+        receipt = await facilitator.settle(payload, selected);
+      } catch (err) {
+        hold?.release();
+        throw err;
+      }
       if (!receipt.success) {
+        hold?.release();
         return challenge(res, accepts, receipt.errorReason || "Payment settlement failed");
       }
       res.setHeader(

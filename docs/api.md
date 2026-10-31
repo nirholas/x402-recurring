@@ -182,9 +182,12 @@ PRIVATE_KEY=0x... npm run client
 | 410 | `MANDATE_EXPIRED` | Mandate past its expiry |
 | 410 | `MANDATE_EXHAUSTED` | All runs used |
 
-The 402 challenge is returned before the mandate is looked up — the route can be
-priced and discovered without owning a mandate — which also means payment settles
-before the run is attempted. Payment settles before the run is attempted, so check the mandate with the free `GET /mandates/:id` first.
+The 402 challenge is returned before the mandate is looked up, so the route can be
+priced and discovered without owning a mandate. Once a payment verifies, the
+mandate is checked and a run is reserved before settlement: a payment for a
+missing, expired or exhausted mandate gets the 404/410 above and is never
+settled, and two payments for the last run cannot both settle. It is still
+cheaper to confirm the mandate with the free `GET /mandates/:id` first.
 
 ---
 

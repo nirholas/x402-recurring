@@ -236,9 +236,10 @@ holding both rails:
 | 410 | `MANDATE_EXHAUSTED` | All runs used |
 
 `POST /execute/:mandateId` answers 402 with the payment terms before it looks the
-mandate up, so the route is quotable without owning a mandate — but it also means
-payment settles before the run is attempted. Confirm the mandate is `active` with
-the free `GET /mandates/:id` before paying.
+mandate up, so the route is quotable without owning a mandate. Once a payment
+verifies, the mandate is checked and a run reserved before settlement, so a payment
+for a missing, expired or exhausted mandate is refused (404/410) and never settles.
+Confirming the mandate is `active` with the free `GET /mandates/:id` is still cheaper.
 | 400 | `BAD_REQUEST` | Malformed body |
 
 ## Discovery

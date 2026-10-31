@@ -12,6 +12,7 @@ import {
   getMandate,
   listMandates,
   MandateError,
+  reserveRun,
 } from "./service.js";
 import { verify } from "./sign.js";
 
@@ -42,6 +43,7 @@ app.use(
           ? `Execute one run of mandate ${id} (${mandate.task.type})`
           : "Execute one run of a mandate",
         outputSchema: ROUTE_SCHEMAS["POST /execute/:mandateId"],
+        reserve: () => reserveRun(id),
       };
     },
   }),
@@ -75,7 +77,7 @@ app.post("/verify", (req, res) => {
 // ---- Paid route -------------------------------------------------------------
 app.post("/execute/:mandateId", (req, res) => {
   try {
-    const report = executeMandate(req.params.mandateId, req.body?.payload);
+    const report = executeMandate(req.params.mandateId, req.body?.payload, true);
     res.json(withSettlement(report, req));
   } catch (err) {
     if (err instanceof MandateError) {

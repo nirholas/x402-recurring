@@ -30,7 +30,8 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "client": "tsx examples/agent-client.ts",
-    "scheduler": "tsx examples/scheduler.ts"
+    "scheduler": "tsx examples/scheduler.ts",
+    "test": "tsx --test tests/*.test.ts"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
