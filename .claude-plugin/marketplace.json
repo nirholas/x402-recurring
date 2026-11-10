@@ -1,0 +1,23 @@
+{
+  "name": "x402-recurring",
+  "owner": {
+    "name": "nirholas"
+  },
+  "description": "Standing orders for agents: signed mandate documents and paid per-run execution over x402, with signed run reports.",
+  "plugins": [
+    {
+      "name": "x402-recurring",
+      "source": "./plugins/x402-recurring",
+      "description": "Standing orders for agents: signed mandate documents and paid per-run execution over x402, with signed run reports.",
+      "category": "automation",
+      "tags": [
+        "x402",
+        "recurring-payments",
+        "mandates",
+        "scheduler",
+        "usdc",
+        "ai-agents"
+      ]
+    }
+  ]
+}

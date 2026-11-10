@@ -1,0 +1,19 @@
+{
+  "name": "x402-recurring",
+  "version": "0.1.0",
+  "description": "Standing orders for agents: signed mandate documents and paid per-run execution over x402, with signed run reports.",
+  "author": {
+    "name": "nirholas"
+  },
+  "repository": "https://github.com/nirholas/x402-recurring",
+  "homepage": "https://nirholas.github.io/x402-recurring/",
+  "license": "Apache-2.0",
+  "keywords": [
+    "x402",
+    "recurring-payments",
+    "mandates",
+    "scheduler",
+    "usdc",
+    "ai-agents"
+  ]
+}
